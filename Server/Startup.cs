@@ -37,7 +37,7 @@ namespace Server
                 app.UseDeveloperExceptionPage();
             }
 
-            Console.Write("Введите максимальное количество запросов, которые могут обрабатываться одновременно: ");
+            Console.Write("Enter the maximum number of requests that can be processed at the same time: ");
             _ = int.TryParse(Console.ReadLine(), out int maxRequests);
             app.UseRequestCounter(maxRequests);
 
