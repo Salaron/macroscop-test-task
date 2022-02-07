@@ -37,9 +37,11 @@ namespace Server
                 app.UseDeveloperExceptionPage();
             }
 
-            app.UseRouting();
+            Console.Write("Введите максимальное количество запросов, которые могут обрабатываться одновременно: ");
+            _ = int.TryParse(Console.ReadLine(), out int maxRequests);
+            app.UseRequestCounter(maxRequests);
 
-            app.UseRequestThrottle(1);
+            app.UseRouting();
 
             app.UseEndpoints(endpoints =>
             {
