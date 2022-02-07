@@ -8,13 +8,13 @@ namespace Server.Middlewares
     /// <summary>
     /// Middleware для контроля количества обрабатываемых запросов сервером
     /// </summary>
-    public class RequestThrottleMiddleware
+    public class RequestCounterMiddleware
     {
         private readonly RequestDelegate _next;
         private readonly int _maxRequests;
         private int _currentRequests;
 
-        public RequestThrottleMiddleware(RequestDelegate next, int maxRequests)
+        public RequestCounterMiddleware(RequestDelegate next, int maxRequests)
         {
             _next = next;
             _maxRequests = maxRequests;
@@ -27,8 +27,8 @@ namespace Server.Middlewares
                 // Проверяем можем ли мы обслужить текущий запрос
                 if (Interlocked.Increment(ref _currentRequests) > _maxRequests)
                 {
-                    // Все места заняты, возвращаем Too Many Requests
-                    httpContext.Response.StatusCode = 429;
+                    // Все места заняты, возвращаем Server Busy
+                    httpContext.Response.StatusCode = 503;
                 } else
                 {
                     // Передаём запрос дальше
@@ -43,11 +43,11 @@ namespace Server.Middlewares
         }
     }
 
-    public static class RequestThrottleExtension
+    public static class RequestCounterExtension
     {
-        public static IApplicationBuilder UseRequestThrottle(this IApplicationBuilder builder, int maxRequests)
+        public static IApplicationBuilder UseRequestCounter(this IApplicationBuilder builder, int maxRequests)
         {
-            return builder.UseMiddleware<RequestThrottleMiddleware>(maxRequests);
+            return builder.UseMiddleware<RequestCounterMiddleware>(maxRequests);
         }
     }
 }
